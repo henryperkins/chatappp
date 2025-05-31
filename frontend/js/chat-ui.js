@@ -17,7 +17,7 @@ export class ChatUI {
             }`;
 
         const icon = document.createElement('div');
-        icon.className = 'flex-shrink-0';
+        icon.className = 'shrink-0';
         icon.innerHTML = message.role === 'user'
             ? '<i class="fas fa-user-circle text-2xl"></i>'
             : '<i class="fas fa-robot text-2xl"></i>';
