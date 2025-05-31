@@ -49,8 +49,8 @@ app.add_middleware(
 llm_client = LLMClient()
 
 # Serve static frontend files
-static_dir = Path(__file__).resolve().parent.parent / "frontend"
-app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
+# static_dir = Path(__file__).resolve().parent.parent / "frontend"
+# app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
 
 
 # Auth endpoints
@@ -176,3 +176,9 @@ async def websocket_endpoint(
 @app.get("/health")
 async def health_check():
     return {"status": "healthy"}
+
+
+# ---------------------------------------------------------
+# Mount static files LAST so it doesn’t shadow /api or /ws
+static_dir = Path(__file__).resolve().parent.parent / "frontend"
+app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
