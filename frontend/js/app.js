@@ -19,7 +19,8 @@ class App {
     async init() {
         await this.editorManager.init();
         this.setupEventListeners();
-        await this.loadChatHistory();
+        const ok = await this.loadChatHistory();
+        if (!ok) return;
         await this.wsClient.connect();
     }
 
@@ -72,18 +73,21 @@ class App {
 
     async loadChatHistory() {
         try {
-            const response = await fetch('/api/chat/history', { credentials: 'include' });
+            const response = await fetch('/api/chat/history',
+                                         { credentials: 'include' });
 
             if (response.status === 401) {
                 window.location.href = '/login.html';
-                return;
+                return false;
             }
             if (!response.ok) throw new Error('Failed to load chat history');
 
             const data = await response.json();
             this.chatUI.renderMessages(data.messages);
+            return true;
         } catch (error) {
             console.error('Failed to load chat history:', error);
+            return false;
         }
     }
 

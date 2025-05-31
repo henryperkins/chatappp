@@ -33,9 +33,11 @@ export class WebSocketClient {
             this.emit('error', error);
         };
 
-        this.ws.onclose = () => {
+        this.ws.onclose = (event) => {
             console.log('WebSocket disconnected');
-            this.attemptReconnect();
+            if (event.code !== 1008) {
+                this.attemptReconnect();
+            }
         };
     }
 
