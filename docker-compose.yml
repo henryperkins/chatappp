@@ -1,0 +1,41 @@
+# docker-compose.yml - Docker Compose configuration
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    container_name: ai-chat-backend
+    environment:
+      - DATABASE_URL=sqlite:///./data/chat.db
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-changeme}
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
+      - OPENAI_PROVIDER=${OPENAI_PROVIDER:-openai}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_MODEL=${OPENAI_MODEL:-gpt-4o-mini}
+      - AZURE_OPENAI_ENDPOINT=${AZURE_OPENAI_ENDPOINT}
+      - AZURE_OPENAI_DEPLOYMENT=${AZURE_OPENAI_DEPLOYMENT}
+      - AZURE_OPENAI_API_VERSION=${AZURE_OPENAI_API_VERSION:-2025-01-01-preview}
+    volumes:
+      - ./data:/app/data
+    networks:
+      - ai-chat-network
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: ai-chat-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - ai-chat-network
+    restart: unless-stopped
+
+networks:
+  ai-chat-network:
+    driver: bridge
+
+volumes:
+  data:

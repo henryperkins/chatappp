@@ -1,0 +1,201 @@
+/* css/style.css - Custom styles for the application */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --bg-primary: #111827;
+    --bg-secondary: #1f2937;
+    --bg-tertiary: #374151;
+    --text-primary: #f9fafb;
+    --text-secondary: #e5e7eb;
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --error: #ef4444;
+    --success: #10b981;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-tertiary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #4b5563;
+}
+
+/* Message styles */
+.message {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.message-content {
+    line-height: 1.6;
+}
+
+.message-content h1,
+.message-content h2,
+.message-content h3,
+.message-content h4,
+.message-content h5,
+.message-content h6 {
+    margin-top: 1em;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+}
+
+.message-content p {
+    margin-bottom: 1em;
+}
+
+.message-content pre {
+    background-color: var(--bg-primary);
+    border-radius: 6px;
+    padding: 1em;
+    margin: 1em 0;
+    overflow-x: auto;
+}
+
+.message-content code {
+    font-family: 'Fira Code', 'Consolas', monospace;
+    font-size: 0.9em;
+}
+
+.message-content pre code {
+    display: block;
+}
+
+.message-content :not(pre) > code {
+    background-color: var(--bg-tertiary);
+    padding: 0.2em 0.4em;
+    border-radius: 3px;
+}
+
+.message-content ul,
+.message-content ol {
+    margin-left: 1.5em;
+    margin-bottom: 1em;
+}
+
+.message-content li {
+    margin-bottom: 0.25em;
+}
+
+.message-content blockquote {
+    border-left: 4px solid var(--accent);
+    padding-left: 1em;
+    margin: 1em 0;
+    color: var(--text-secondary);
+}
+
+.message-content a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.message-content a:hover {
+    text-decoration: underline;
+}
+
+/* Command palette */
+.command-option {
+    transition: background-color 0.2s;
+}
+
+.command-option i {
+    width: 20px;
+    margin-right: 0.5em;
+}
+
+/* Highlight for search */
+.highlight {
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+/* Loading animation */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--text-secondary);
+    border-radius: 50%;
+    border-top-color: var(--accent);
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Form elements */
+input[type="text"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--bg-tertiary);
+    color: var(--text-primary);
+    padding: 0.5em;
+    border-radius: 4px;
+    transition: border-color 0.2s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--accent);
+}
+
+button {
+    transition: all 0.2s;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+/* Monaco editor overrides */
+.monaco-editor {
+    border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .flex-col-mobile {
+        flex-direction: column;
+    }
+
+    #editor {
+        height: 300px;
+    }
+}

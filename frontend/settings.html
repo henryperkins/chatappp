@@ -1,0 +1,88 @@
+<!-- settings.html - Settings page for model configuration -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Minimal AI Coding Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="bg-gray-900 text-gray-100">
+    <div class="container mx-auto max-w-2xl p-6">
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-2xl font-bold">Settings</h1>
+            <a href="/" class="text-gray-400 hover:text-gray-100">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Chat
+            </a>
+        </div>
+
+        <div class="bg-gray-800 rounded-lg p-6">
+            <form id="settingsForm">
+                <div class="mb-6">
+                    <label for="model" class="block mb-2 font-medium">Model</label>
+                    <select id="model" name="model" class="w-full bg-gray-700 text-gray-100 p-3 rounded-md">
+                        <option value="gpt-4o">GPT-4o</option>
+                        <option value="gpt-4o-mini">GPT-4o Mini</option>
+                        <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                    </select>
+                </div>
+
+                <div class="mb-6">
+                    <label for="temperature" class="block mb-2 font-medium">
+                        Temperature: <span id="temperatureValue">0.7</span>
+                    </label>
+                    <input type="range" id="temperature" name="temperature"
+                           min="0" max="2" step="0.1" value="0.7"
+                           class="w-full">
+                    <div class="flex justify-between text-sm text-gray-400 mt-1">
+                        <span>Focused</span>
+                        <span>Creative</span>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label for="maxTokens" class="block mb-2 font-medium">
+                        Max Tokens: <span id="maxTokensValue">2048</span>
+                    </label>
+                    <input type="range" id="maxTokens" name="maxTokens"
+                           min="256" max="4096" step="256" value="2048"
+                           class="w-full">
+                    <div class="flex justify-between text-sm text-gray-400 mt-1">
+                        <span>256</span>
+                        <span>4096</span>
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label for="provider" class="block mb-2 font-medium">Provider</label>
+                    <select id="provider" name="provider" class="w-full bg-gray-700 text-gray-100 p-3 rounded-md">
+                        <option value="openai">OpenAI</option>
+                        <option value="azure">Azure OpenAI</option>
+                    </select>
+                </div>
+
+                <div class="flex gap-4">
+                    <button type="submit" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-md">
+                        Save Settings
+                    </button>
+                    <button type="button" id="resetBtn" class="px-6 py-3 bg-gray-600 hover:bg-gray-700 rounded-md">
+                        Reset to Defaults
+                    </button>
+                </div>
+            </form>
+
+            <div id="successMessage" class="mt-4 p-4 bg-green-800 text-green-100 rounded-md hidden">
+                <i class="fas fa-check-circle mr-2"></i>Settings saved successfully!
+            </div>
+
+            <div id="errorMessage" class="mt-4 p-4 bg-red-800 text-red-100 rounded-md hidden">
+                <i class="fas fa-exclamation-circle mr-2"></i><span id="errorText"></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/settings.js"></script>
+</body>
+</html>

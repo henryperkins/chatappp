@@ -1,0 +1,12 @@
+# backend/requirements.txt - Python dependencies
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+sqlalchemy==2.0.23
+bcrypt==4.1.1
+pyjwt==2.8.0
+httpx==0.25.2
+python-multipart==0.0.6
+backoff==2.2.1
+pytest==7.4.3
+pytest-asyncio==0.21.1
+pytest-cov==4.1.0

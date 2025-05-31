@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Minimal AI Coding Chat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-900 text-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-gray-800 p-8 rounded-lg shadow-lg w-96">
+        <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
+        <form id="loginForm">
+            <div class="mb-4">
+                <label for="username" class="block mb-2">Username</label>
+                <input type="text" id="username" name="username" required
+                    class="w-full bg-gray-700 text-gray-100 p-2 rounded-md">
+            </div>
+            <div class="mb-6">
+                <label for="password" class="block mb-2">Password</label>
+                <input type="password" id="password" name="password" required
+                    class="w-full bg-gray-700 text-gray-100 p-2 rounded-md">
+            </div>
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 p-2 rounded-md">
+                Login
+            </button>
+        </form>
+        <div id="errorMessage" class="mt-4 text-red-500 text-center hidden"></div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.classList.add('hidden');
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password }),
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    sessionStorage.setItem('csrf_token', data.csrf_token);
+                    window.location.href = '/';
+                } else {
+                    const error = await response.json();
+                    errorDiv.textContent = error.detail || 'Login failed';
+                    errorDiv.classList.remove('hidden');
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Network error. Please try again.';
+                errorDiv.classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+
+</html>

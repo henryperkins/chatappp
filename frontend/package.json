@@ -1,0 +1,19 @@
+// frontend/package.json - Frontend dependencies
+{
+    "name": "minimal-ai-coding-chat",
+    "version": "1.0.0",
+    "description": "Minimal AI Coding Chat Frontend",
+    "scripts": {
+        "test": "vitest",
+        "test:coverage": "vitest --coverage"
+    },
+    "devDependencies": {
+        "vitest": "^0.34.6",
+        "@vitest/coverage-v8": "^0.34.6",
+        "jsdom": "^22.1.0"
+    },
+    "dependencies": {
+        "marked": "^9.1.6",
+        "highlight.js": "^11.9.0"
+    }
+}
