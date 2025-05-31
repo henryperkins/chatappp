@@ -23,8 +23,20 @@ class LLMClient:
         return "https://api.openai.com/v1/chat/completions"
 
     def _get_headers(self) -> Dict[str, str]:
+        """
+        Build the correct auth header for the selected provider.
+        • OpenAI → standard bearer token
+        • Azure OpenAI → `api-key` header (prefer AZURE_OPENAI_API_KEY,
+          fall back to OPENAI_API_KEY for backward-compatibility)
+        """
         if self.provider == "azure":
-            return {"api-key": settings.openai_api_key}
+            api_key = settings.azure_openai_api_key or settings.openai_api_key
+            if not api_key:
+                raise RuntimeError(
+                    "Azure provider selected but AZURE_OPENAI_API_KEY / OPENAI_API_KEY is not set"
+                )
+            return {"api-key": api_key}
+
         return {"Authorization": f"Bearer {settings.openai_api_key}"}
 
     def _build_messages(
