@@ -58,7 +58,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const settings = {
             model: formData.get('model'),
             temperature: parseFloat(formData.get('temperature')),
-            max_tokens: parseInt(formData.get('maxTokens'))
+            max_tokens: parseInt(formData.get('maxTokens')),
+            provider: formData.get('provider')
         };
 
         try {

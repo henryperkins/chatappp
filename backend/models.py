@@ -27,6 +27,7 @@ class ChatHistoryResponse(BaseModel):
 
 class SettingsUpdate(BaseModel):
     model: Optional[str] = None
+    provider: Optional[str] = Field(None)
     max_tokens: Optional[int] = Field(None, ge=1, le=4096)
     temperature: Optional[float] = Field(None, ge=0, le=2)
 
@@ -35,6 +36,13 @@ class SettingsUpdate(BaseModel):
         allowed_models = ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo"]
         if v and v not in allowed_models:
             raise ValueError(f"Model must be one of {allowed_models}")
+        return v
+
+    @validator("provider")
+    def validate_provider(cls, v):
+        allowed = ["openai", "azure"]
+        if v and v not in allowed:
+            raise ValueError(f"Provider must be one of {allowed}")
         return v
 
 

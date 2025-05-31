@@ -146,6 +146,9 @@ async def update_settings(update: SettingsUpdate, _: str = Depends(get_current_u
         settings.max_tokens = update.max_tokens
     if update.temperature is not None:
         settings.temperature = update.temperature
+    if update.provider is not None:
+        settings.openai_provider = update.provider
+        llm_client.provider = update.provider
 
     return {"status": "success"}
 
