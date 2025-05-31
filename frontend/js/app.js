@@ -124,14 +124,19 @@ class App {
         messageInput.value = '';
         this.toggleAbortButton(true);
 
-        // Send via WebSocket
-        await this.wsClient.send({
-            type: 'message',
-            content: actualContent,
-            command: command,
-            temperature: parseFloat(localStorage.getItem('temperature') || '0.7'),
-            max_tokens: parseInt(localStorage.getItem('max_tokens') || '2048')
-        });
+        try {
+            await this.wsClient.send({
+                type: 'message',
+                content: actualContent,
+                command: command,
+                temperature: parseFloat(localStorage.getItem('temperature') || '0.7'),
+                max_tokens: parseInt(localStorage.getItem('max_tokens') || '2048')
+            });
+        } catch (err) {
+            console.error('Failed to send message:', err);
+            this.chatUI.showError('Unable to send message – connection not ready.');
+            this.toggleAbortButton(false);
+        }
     }
 
     handleWebSocketMessage(data) {
