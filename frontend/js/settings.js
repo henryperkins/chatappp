@@ -22,10 +22,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Load current settings
     async function loadSettings() {
         try {
-            const response = await fetch('/api/settings', {
-                credentials: 'include'
-            });
+            const response = await fetch('/api/settings', { credentials: 'include' });
 
+            if (response.status === 401) {
+                window.location.href = '/login.html';
+                return;
+            }
             if (!response.ok) throw new Error('Failed to load settings');
 
             const settings = await response.json();
@@ -70,6 +72,10 @@ document.addEventListener('DOMContentLoaded', async () => {
                 body: JSON.stringify(settings)
             });
 
+            if (response.status === 401) {
+                window.location.href = '/login.html';
+                return;
+            }
             if (!response.ok) throw new Error('Failed to save settings');
 
             // Update localStorage

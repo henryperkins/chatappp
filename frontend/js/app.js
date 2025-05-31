@@ -72,10 +72,12 @@ class App {
 
     async loadChatHistory() {
         try {
-            const response = await fetch('/api/chat/history', {
-                credentials: 'include'
-            });
+            const response = await fetch('/api/chat/history', { credentials: 'include' });
 
+            if (response.status === 401) {
+                window.location.href = '/login.html';
+                return;
+            }
             if (!response.ok) throw new Error('Failed to load chat history');
 
             const data = await response.json();

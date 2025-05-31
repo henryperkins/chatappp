@@ -155,6 +155,11 @@ async def update_settings(update: SettingsUpdate, _: str = Depends(get_current_u
 async def websocket_endpoint(
     websocket: WebSocket, client_id: str, db: Session = Depends(get_db)
 ):
+    token = websocket.cookies.get("session_token")
+    payload = auth_manager.verify_session_token(token) if token else None
+    if not payload:
+        await websocket.close(code=1008)   # Policy violation – not authenticated
+        return
     await manager.connect(websocket, client_id)
     try:
         while True:
