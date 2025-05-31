@@ -20,7 +20,13 @@ class App {
         await this.editorManager.init();
         this.setupEventListeners();
         const ok = await this.loadChatHistory();
-        if (!ok) return;
+        if (!ok) {                      // not logged-in
+            document.getElementById('loginBtn').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+            return;
+        }
+        document.getElementById('loginBtn').classList.add('hidden');
+        document.getElementById('logoutBtn').classList.remove('hidden');
         await this.wsClient.connect();
     }
 
@@ -31,6 +37,7 @@ class App {
         const abortBtn = document.getElementById('abortBtn');
         const clearChatBtn = document.getElementById('clearChatBtn');
         const logoutBtn = document.getElementById('logoutBtn');
+        const loginBtn  = document.getElementById('loginBtn');
         const searchInput = document.getElementById('searchInput');
 
         sendBtn.addEventListener('click', () => this.sendMessage());
