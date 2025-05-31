@@ -1,10 +1,19 @@
-# Database setup with SQLAlchemy ORM
+"""Database setup and utility functions for SQLAlchemy ORM."""
 import os
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, Float
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, Session
 from datetime import datetime
-from .config import settings
+
+from sqlalchemy import (
+    create_engine,
+    Column,
+    Integer,
+    String,
+    Text,
+    DateTime,
+    Float,
+)  # pylint: disable=import-error
+from sqlalchemy.ext.declarative import declarative_base  # pylint: disable=import-error
+from sqlalchemy.orm import sessionmaker  # pylint: disable=import-error
+from .config import settings  # pylint: disable=import-error,relative-beyond-top-level
 
 # Ensure SQLite DB directory exists; prevents "unable to open database file"
 if settings.database_url.startswith("sqlite"):
@@ -19,6 +28,7 @@ Base = declarative_base()
 
 
 class ChatMessage(Base):
+    """SQLAlchemy ORM model for storing chat messages."""
     __tablename__ = "chat_messages"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -31,6 +41,7 @@ class ChatMessage(Base):
 
 
 def get_db():
+    """Database session generator (used for FastAPI dependency injection)."""
     db = SessionLocal()
     try:
         yield db
@@ -39,4 +50,5 @@ def get_db():
 
 
 def init_db():
+    """Initializes DB tables by creating all defined SQLAlchemy models."""
     Base.metadata.create_all(bind=engine)

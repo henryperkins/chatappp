@@ -1,4 +1,11 @@
-# Main FastAPI application
+"""Main FastAPI application for Minimal AI Coding Chat.
+
+Provides authentication, chat history management, app settings, and websocket endpoints.
+"""
+from typing import Optional
+from contextlib import asynccontextmanager
+from pathlib import Path
+
 from fastapi import (
     FastAPI,
     Depends,
@@ -9,32 +16,36 @@ from fastapi import (
     WebSocketDisconnect,
 )
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-from typing import Optional
-import asyncio
-from contextlib import asynccontextmanager
 from fastapi.staticfiles import StaticFiles
-from pathlib import Path
 
 from backend.database import init_db, get_db, ChatMessage
-from backend.auth import auth_manager, get_current_user, verify_csrf_token
-from backend.models import *
+from backend.auth import auth_manager, get_current_user
+from backend.models import (
+    LoginRequest,
+    ChatHistoryResponse,
+    ChatMessageResponse,
+    SettingsUpdate,
+)
 from backend.config import settings
 from backend.websockets import manager, handle_chat_message
 from backend.llm_client import LLMClient
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan():
+    """Lifespan context manager for FastAPI app startup and shutdown."""
     # Startup
     init_db()
     yield
     # Shutdown
-    pass
 
 
-app = FastAPI(title="Minimal AI Coding Chat", version="1.0.0", lifespan=lifespan)
+app = FastAPI(
+    title="Minimal AI Coding Chat",
+    version="1.0.0",
+    lifespan=lifespan,
+)
 
 # CORS middleware
 app.add_middleware(
@@ -56,16 +67,22 @@ llm_client = LLMClient()
 # Auth endpoints
 @app.post("/api/auth/login")
 async def login(request: Request, response: Response, login_data: LoginRequest):
+    """Authenticate user and start a session."""
     # Rate limiting
     client_ip = request.client.host
     if not auth_manager.check_rate_limit(client_ip):
         raise HTTPException(status_code=429, detail="Too many login attempts")
 
     # Verify credentials
+    password_hash = auth_manager.get_password_hash(
+        settings.admin_password
+    )
     if (
-        login_data.username != settings.admin_username
+        login_data.username
+        != settings.admin_username
         or not auth_manager.verify_password(
-            login_data.password, auth_manager.get_password_hash(settings.admin_password)
+            login_data.password,
+            password_hash,
         )
     ):
         raise HTTPException(status_code=401, detail="Invalid credentials")
@@ -77,17 +94,24 @@ async def login(request: Request, response: Response, login_data: LoginRequest):
         value=token,
         httponly=True,
         samesite="lax",
-        max_age=settings.session_expire_minutes * 60,
+        max_age=(
+            settings.session_expire_minutes * 60
+        ),
     )
 
     return {
         "status": "success",
-        "csrf_token": auth_manager.verify_session_token(token)["csrf"],
+        "csrf_token": auth_manager.verify_session_token(
+            token
+        )[
+            "csrf"
+        ],
     }
 
 
 @app.post("/api/auth/logout")
 async def logout(response: Response, _: str = Depends(get_current_user)):
+    """Logout user and clear session."""
     response.delete_cookie("session_token")
     return {"status": "success"}
 
@@ -101,6 +125,7 @@ async def get_chat_history(
     offset: int = 0,
     search: Optional[str] = None,
 ):
+    """Retrieve chat history for authenticated user."""
     query = db.query(ChatMessage)
 
     if search:
@@ -108,37 +133,58 @@ async def get_chat_history(
 
     total = query.count()
     messages = (
-        query.order_by(ChatMessage.timestamp.desc()).offset(offset).limit(limit).all()
+        query.order_by(ChatMessage.timestamp.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
     )
 
+    chat_messages = [
+        ChatMessageResponse.from_orm(
+            msg
+        )
+        for msg in reversed(
+            messages
+        )
+    ]
     return ChatHistoryResponse(
-        messages=[ChatMessageResponse.from_orm(msg) for msg in reversed(messages)],
+        messages=chat_messages,
         total=total,
     )
 
 
 @app.delete("/api/chat/history")
 async def clear_chat_history(
-    db: Session = Depends(get_db), _: str = Depends(get_current_user)
+    db: Session = Depends(get_db),
+    _: str = Depends(get_current_user),
 ):
+    """Clear chat history for authenticated user."""
     db.query(ChatMessage).delete()
     db.commit()
-    return {"status": "success"}
+    return {
+        "status": "success"
+    }
 
 
 # Settings endpoints
 @app.get("/api/settings")
 async def get_settings(_: str = Depends(get_current_user)):
+    """Get current LLM settings."""
+    model = settings.openai_model
+    max_tokens = settings.max_tokens
+    temperature = settings.temperature
+    provider = settings.openai_provider
     return {
-        "model": settings.openai_model,
-        "max_tokens": settings.max_tokens,
-        "temperature": settings.temperature,
-        "provider": settings.openai_provider,
+        "model": model,
+        "max_tokens": max_tokens,
+        "temperature": temperature,
+        "provider": provider,
     }
 
 
 @app.post("/api/settings")
 async def update_settings(update: SettingsUpdate, _: str = Depends(get_current_user)):
+    """Update LLM settings for the application."""
     if update.model:
         settings.openai_model = update.model
         llm_client.model = update.model
@@ -150,7 +196,9 @@ async def update_settings(update: SettingsUpdate, _: str = Depends(get_current_u
         settings.openai_provider = update.provider
         llm_client.provider = update.provider
 
-    return {"status": "success"}
+    return {
+        "status": "success"
+    }
 
 
 # WebSocket endpoint
@@ -158,10 +206,12 @@ async def update_settings(update: SettingsUpdate, _: str = Depends(get_current_u
 async def websocket_endpoint(
     websocket: WebSocket, client_id: str, db: Session = Depends(get_db)
 ):
+    """WebSocket endpoint for real-time chat communication."""
     token = websocket.cookies.get("session_token")
     payload = auth_manager.verify_session_token(token) if token else None
     if not payload:
-        await websocket.close(code=1008)   # Policy violation – not authenticated
+        # Policy violation – not authenticated
+        await websocket.close(code=1008)
         return
     await manager.connect(websocket, client_id)
     try:
@@ -176,17 +226,29 @@ async def websocket_endpoint(
     except WebSocketDisconnect:
         manager.disconnect(client_id)
     except Exception as e:
-        print(f"WebSocket error: {e}")
+        print(
+            f"WebSocket error: {e}"
+        )
         manager.disconnect(client_id)
 
 
 # Health check
 @app.get("/health")
 async def health_check():
+    """Basic health check endpoint."""
     return {"status": "healthy"}
 
 
 # ---------------------------------------------------------
 # Mount static files LAST so it doesn’t shadow /api or /ws
-static_dir = Path(__file__).resolve().parent.parent / "frontend"
-app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
+static_dir = (
+    Path(__file__).resolve().parent.parent / "frontend"
+)
+app.mount(
+    "/",
+    StaticFiles(
+        directory=static_dir,
+        html=True,
+    ),
+    name="static",
+)
