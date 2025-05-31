@@ -5,7 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minimal AI Coding Chat</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: 'class' };   /* add/adjust options as needed */
+    </script>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script src="https://unpkg.com/monaco-editor@0.45.0/min/vs/loader.js"></script>
     <!-- Markdown + code highlighting libraries required by chat-ui.js -->
     <link rel="stylesheet"
