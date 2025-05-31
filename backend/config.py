@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     cors_origins: list = ["http://localhost:5173"]
     session_expire_minutes: int = 1440  # 24 hours
 
+    # Server
+    server_host: str = "0.0.0.0"
+    server_port: int = 8000
+
     @validator("database_url")
     def configure_sqlite_wal(cls, v):
         if v.startswith("sqlite"):
