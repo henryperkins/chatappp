@@ -17,9 +17,9 @@
 </head>
 
 <body class="bg-gray-900 text-gray-100">
-    <div class="flex h-screen">
+    <div class="flex flex-col md:flex-row h-screen">
         <!-- Chat Section -->
-        <div class="flex-1 flex flex-col">
+        <div class="flex-1 flex flex-col md:w-1/2">
             <!-- Header -->
             <header class="bg-gray-800 border-b border-gray-700 p-4">
                 <div class="flex justify-between items-center">
@@ -39,6 +39,10 @@
                         <!-- make logout hidden until the user is authenticated -->
                         <button id="logoutBtn" class="text-gray-400 hover:text-gray-100 hidden">
                             <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                        <button id="toggleEditorBtn"
+                                class="text-gray-400 hover:text-gray-100 md:hidden">
+                            <i class="fas fa-code"></i>
                         </button>
                     </div>
                 </div>
@@ -87,7 +91,9 @@
         </div>
 
         <!-- Code Editor Section -->
-        <div class="w-1/2 border-l border-gray-700 flex flex-col">
+        <div id="editorSection"
+             class="w-full md:w-1/2 border-t md:border-t-0 md:border-l
+                    border-gray-700 flex flex-col hidden md:flex">
             <div class="bg-gray-800 p-2 border-b border-gray-700">
                 <select id="languageSelect" class="bg-gray-700 text-gray-100 px-2 py-1 rounded">
                     <option value="javascript">JavaScript</option>

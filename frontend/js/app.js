@@ -45,6 +45,20 @@ class App {
         clearChatBtn.addEventListener('click', () => this.clearChat());
         logoutBtn.addEventListener('click', () => this.logout());
 
+        const toggleEditorBtn = document.getElementById('toggleEditorBtn');
+        const editorSection   = document.getElementById('editorSection');
+
+        // Mobile: toggle code-editor visibility
+        if (toggleEditorBtn) {
+            toggleEditorBtn.addEventListener('click', () => {
+                const isHidden = editorSection.classList.toggle('hidden');
+                if (!isHidden && this.editorManager.editor) {
+                    // Let the element render, then force Monaco to recalc size
+                    setTimeout(() => this.editorManager.editor.layout(), 0);
+                }
+            });
+        }
+
         messageInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();

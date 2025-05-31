@@ -195,7 +195,6 @@ button:active {
         flex-direction: column;
     }
 
-    #editor {
-        height: 300px;
-    }
+    #editor          { height: 50vh; }
+    #messagesContainer { height: 50vh; }
 }
